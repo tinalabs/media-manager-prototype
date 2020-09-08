@@ -11,8 +11,10 @@ import Head from 'next/head';
 import { useEffect } from 'react';
 import { useCMS } from 'tinacms';
 import { GithubMediaStore } from 'react-tinacms-github';
+import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github';
 
-export default function Post({ post, preview }) {
+export default function Post({ file, error, preview }) {
+  const post = file?.data;
   const cms = useCMS();
 
   useEffect(() => {
@@ -34,16 +36,21 @@ export default function Post({ post, preview }) {
           <>
             <article className='mb-32'>
               <Head>
-                <title>{post.title} | TinaCMS Media Manager Prototype</title>
-                <meta property='og:image' content={post.ogImage.url} />
+                <title>
+                  {post.frontmatter.title} | TinaCMS Media Manager Prototype
+                </title>
+                <meta
+                  property='og:image'
+                  content={post.frontmatter.ogImage.url}
+                />
               </Head>
               <PostHeader
-                title={post.title}
-                coverImage={post.coverImage}
-                date={post.date}
-                author={post.author}
+                title={post.frontmatter.title}
+                coverImage={post.frontmatter.coverImage}
+                date={post.frontmatter.date}
+                author={post.frontmatter.author}
               />
-              <PostBody content={post.content} />
+              <PostBody content={post.markdownBody} />
             </article>
           </>
         )}
@@ -52,7 +59,19 @@ export default function Post({ post, preview }) {
   );
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params, preview, previewData }) {
+  if (preview) {
+    const props = await getGithubPreviewProps({
+      ...previewData,
+      fileRelativePath: `_posts/${params.slug}.md`,
+      parse: parseMarkdown,
+    });
+
+    props.props.file.data.slug = params.slug;
+
+    return props;
+  }
+
   const post = getPostBySlug(params.slug, [
     'title',
     'date',
@@ -65,7 +84,10 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      post,
+      file: {
+        fileRelativePath: `_posts/${params.slug}.md`,
+        data: post,
+      },
     },
   };
 }

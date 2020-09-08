@@ -13,6 +13,7 @@ export default function MyApp({ Component, pageProps }) {
           authCallbackRoute: '/api/create-github-access-token',
           clientId: process.env.GITHUB_CLIENT_ID,
           baseRepoFullName: process.env.REPO_FULL_NAME,
+          baseBranch: process.env.BASE_BRANCH,
         }),
       },
     });
