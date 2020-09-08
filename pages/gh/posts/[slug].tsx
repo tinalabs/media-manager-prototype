@@ -31,6 +31,10 @@ export default function Post({ file, error, preview }) {
             name: 'picture',
             component: 'image',
             label: 'Profile Picture',
+            previewSrc(values, { input }) {
+              const src = `public` + input.value;
+              return cms.media.store.previewSrc(src);
+            },
           },
         ],
       },
@@ -39,6 +43,11 @@ export default function Post({ file, error, preview }) {
         name: 'frontmatter.coverImage',
         component: 'image',
         label: 'Cover Image',
+        //@ts-ignore
+        previewSrc(values, { input }) {
+          const src = `public` + input.value;
+          return cms.media.store.previewSrc(src);
+        },
       },
       { name: 'markdownBody', component: 'textarea', label: 'Body' },
     ],
@@ -64,9 +73,7 @@ export default function Post({ file, error, preview }) {
           <>
             <article className='mb-32'>
               <Head>
-                <title>
-                  {post.frontmatter.title} | TinaCMS Media Manager Prototype
-                </title>
+                <title>{post.frontmatter.title} | TinaCMS + GitHub</title>
                 <meta
                   property='og:image'
                   content={post.frontmatter.ogImage.url}
