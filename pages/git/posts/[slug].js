@@ -18,7 +18,7 @@ export default function Post({ post, morePosts, preview }) {
   return (
     <Layout preview={preview}>
       <Container>
-        <Header />
+        <Header cms='Git Backed' />
         {router.isFallback ? (
           <PostTitle>Loading…</PostTitle>
         ) : (
