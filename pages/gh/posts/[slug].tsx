@@ -9,13 +9,41 @@ import { getPostBySlug, getAllPosts } from '../../../lib/api';
 import PostTitle from '../../../components/post-title';
 import Head from 'next/head';
 import { useEffect } from 'react';
-import { useCMS } from 'tinacms';
-import { GithubMediaStore } from 'react-tinacms-github';
+import { useCMS, usePlugin } from 'tinacms';
+import { useGithubMarkdownForm, GithubMediaStore } from 'react-tinacms-github';
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github';
 
 export default function Post({ file, error, preview }) {
-  const post = file?.data;
   const cms = useCMS();
+
+  const [post, form] = useGithubMarkdownForm(file, {
+    label: 'Post',
+    fields: [
+      { name: 'frontmatter.title', component: 'text', label: 'Title' },
+      { name: 'frontmatter.date', component: 'text', label: 'Date' },
+      {
+        name: 'frontmatter.author',
+        component: 'group',
+        label: 'Author',
+        fields: [
+          { name: 'name', component: 'text', label: 'Name' },
+          {
+            name: 'picture',
+            component: 'image',
+            label: 'Profile Picture',
+          },
+        ],
+      },
+
+      {
+        name: 'frontmatter.coverImage',
+        component: 'image',
+        label: 'Cover Image',
+      },
+      { name: 'markdownBody', component: 'textarea', label: 'Body' },
+    ],
+  });
+  usePlugin(form);
 
   useEffect(() => {
     cms.media.store = new GithubMediaStore(cms.api.github);
