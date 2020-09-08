@@ -29,7 +29,9 @@ export default function Index({ allPosts }) {
               excerpt={heroPost.excerpt}
             />
           )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+          {morePosts.length > 0 && (
+            <MoreStories cms='strapi' posts={morePosts} />
+          )}
         </Container>
       </Layout>
     </>
