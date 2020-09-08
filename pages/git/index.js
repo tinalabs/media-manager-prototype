@@ -20,6 +20,7 @@ export default function Index({ allPosts }) {
           <Intro cms='Git' />
           {heroPost && (
             <HeroPost
+              cms='git'
               title={heroPost.title}
               coverImage={heroPost.coverImage}
               date={heroPost.date}
