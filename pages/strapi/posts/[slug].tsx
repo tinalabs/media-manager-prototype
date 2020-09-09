@@ -14,6 +14,25 @@ import { InlineForm, InlineText, InlineImage } from 'react-tinacms-inline'
 import { InlineWysiwyg } from 'react-tinacms-editor'
 import ReactMarkdown from 'react-markdown'
 
+const saveMutation = `
+mutation UpdateBlogPost(
+  $id: ID!
+  $title: String
+  $content: String
+  $coverImageId: ID
+) {
+  updateBlogPost(
+    input: {
+      where: { id: $id }
+      data: { title: $title, content: $content, coverImage: $coverImageId}
+    }
+  ) {
+    blogPost {
+      id
+    }
+  }
+}`
+
 export default function Post({ post: initialPost, preview }) {
   const router = useRouter()
   if (!router.isFallback && !initialPost?.slug) {
@@ -26,7 +45,20 @@ export default function Post({ post: initialPost, preview }) {
     id: initialPost.id,
     label: 'Blog Post',
     initialValues: initialPost,
-    onSubmit: () => {},
+    onSubmit: async (values) => {
+      const response = await cms.api.strapi.fetchGraphql(saveMutation, {
+        id: values.id,
+        title: values.title,
+        content: values.content,
+        //@ts-ignore
+        coverImageId: cms.media.store.getFileId(values.coverImage.url),
+      })
+      if (response.data) {
+        cms.alerts.success('Changes saved successfully.')
+      } else {
+        cms.alerts.error('Error saving changes.')
+      }
+    },
     fields: [],
   }
 
@@ -54,17 +86,22 @@ export default function Post({ post: initialPost, preview }) {
                   <PostHeader
                     title={<InlineText name="title" />}
                     coverImageComponent={
-                      <InlineImage
-                        name="coverImage.url"
-                        previewSrc={(formValues) =>
-                          process.env.STRAPI_URL +
-                          //@ts-ignore
-                          cms.media.store.getFilePath(formValues.coverImage.url)
-                        }
-                        uploadDir={() => '/uploads'}
-                        parse={(filename) => `/uploads/${filename}`}
-                      ></InlineImage>
+                      cms.enabled ? (
+                        <InlineImage
+                          name="coverImage.url"
+                          previewSrc={(formValues) =>
+                            process.env.STRAPI_URL +
+                            //@ts-ignore
+                            cms.media.store.getFilePath(
+                              formValues.coverImage.url
+                            )
+                          }
+                          uploadDir={() => '/uploads'}
+                          parse={(filename) => `/uploads/${filename}`}
+                        ></InlineImage>
+                      ) : null
                     }
+                    coverImage={process.env.STRAPI_URL + post.coverImage.url}
                     date={post.date}
                     author={{
                       name: post.author.name,
