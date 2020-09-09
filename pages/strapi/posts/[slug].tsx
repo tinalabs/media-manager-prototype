@@ -51,7 +51,7 @@ export default function Post({ post, morePosts, preview }) {
   )
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params, preview, previewData }) {
   const postResults = await fetchGraphql(
     process.env.STRAPI_URL,
     `
@@ -75,10 +75,18 @@ export async function getStaticProps({ params }) {
     }`
   )
   const post = postResults.data.blogPosts[0]
+
+  if (typeof preview === 'undefined') {
+    preview = false
+    previewData = {}
+  }
+
   return {
     props: {
       post,
     },
+    preview,
+    previewData,
   }
 }
 
