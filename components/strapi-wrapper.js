@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { useCMS } from 'tinacms'
 import { StrapiMediaStore, StrapiProvider } from 'react-tinacms-strapi'
 
@@ -28,7 +28,7 @@ const EditButton = () => {
 
 const StrapiWrapper = ({ children }) => {
   const cms = useCMS()
-  useEffect(() => {
+  useLayoutEffect(() => {
     cms.media.store = new StrapiMediaStore(process.env.STRAPI_URL)
     return () => {
       // remove the API when unmounted?
