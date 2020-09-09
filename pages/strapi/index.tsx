@@ -3,15 +3,16 @@ import MoreStories from '../../components/more-stories'
 import HeroPost from '../../components/hero-post'
 import Intro from '../../components/intro'
 import Layout from '../../components/layout'
+import StrapiWrapper from '../../components/strapi-wrapper'
 import Head from 'next/head'
 import { fetchGraphql } from 'react-tinacms-strapi'
 
-export default function Index({ allPosts }) {
+export default function Index({ allPosts, preview }) {
   const heroPost = allPosts[0]
   const morePosts = allPosts.slice(1)
   return (
-    <>
-      <Layout preview={false}>
+    <StrapiWrapper>
+      <Layout preview={preview}>
         <Head>
           <title>Next.js Blog Example with Strapi</title>
         </Head>
@@ -42,11 +43,11 @@ export default function Index({ allPosts }) {
           )}
         </Container>
       </Layout>
-    </>
+    </StrapiWrapper>
   )
 }
 
-export async function getStaticProps() {
+export async function getStaticProps({ preview, previewData }) {
   const postResults = await fetchGraphql(
     process.env.STRAPI_URL,
     `
@@ -68,7 +69,13 @@ export async function getStaticProps() {
       }
     }`
   )
+
+  if (typeof preview === 'undefined') {
+    preview = false
+    previewData = {}
+  }
+
   return {
-    props: { allPosts: postResults.data.blogPosts },
+    props: { allPosts: postResults.data.blogPosts, preview, previewData },
   }
 }
