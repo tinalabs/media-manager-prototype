@@ -1,10 +1,11 @@
 import { useCMS, Modal, ModalHeader, ModalBody, ModalFullscreen } from 'tinacms'
 import { useEffect, useState } from 'react'
-import { MediaList } from '../lib/media'
+import { MediaList, Media } from '../lib/media'
 
 export interface MediaRequest {
   limit?: number
   directory?: string
+  onSelect?(media: Media): void
 }
 
 export function MediaManager() {
@@ -33,7 +34,7 @@ export function MediaManager() {
     </Modal>
   )
 }
-function MediaManagerThing(props: MediaRequest) {
+function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
   const [directory, setDirectory] = useState<string | undefined>(
     props.directory
   )
@@ -97,6 +98,16 @@ function MediaManagerThing(props: MediaRequest) {
         >
           {item.filename}
           {item.type === 'dir' && '/'}
+          {onSelect && item.type === 'file' && (
+            <button
+              style={{ marginLeft: '5rem' }}
+              onClick={() => {
+                onSelect(item)
+              }}
+            >
+              Insert
+            </button>
+          )}
         </li>
       ))}
       {pageLinks}

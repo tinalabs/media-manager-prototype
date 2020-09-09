@@ -4,6 +4,7 @@ import { GithubClient } from 'react-tinacms-github'
 import { StrapiClient } from 'react-tinacms-strapi'
 import { MediaManager } from '../tinamedia/media-manager'
 import { MediaCMS } from '../lib/cms'
+import { Media } from '../lib/media'
 
 export default function MyApp({ Component, pageProps }) {
   const cms = React.useMemo(() => {
@@ -52,7 +53,11 @@ const OpenMediaButton = () => {
     <button
       onClick={() => {
         // @ts-ignore
-        cms.media.open()
+        cms.media.open({
+          onSelect(media: Media) {
+            alert('Selected: ' + media.filename)
+          },
+        })
       }}
     >
       Open Media Manager
