@@ -1,12 +1,17 @@
 import { useCMS, Modal, ModalHeader, ModalBody, ModalFullscreen } from 'tinacms'
 import { useEffect, useState } from 'react'
 import { MediaList, Media } from '../lib/media'
+import styled from 'styled-components'
 
 export interface MediaRequest {
   limit?: number
   directory?: string
   onSelect?(media: Media): void
 }
+const FilesContainer = styled(ModalBody)`
+  max-height: 100%;
+  overflow-y: scroll;
+`
 
 export function MediaManager() {
   const cms = useCMS()
@@ -27,9 +32,9 @@ export function MediaManager() {
         <ModalHeader close={() => setRequest(undefined)}>
           I'm the Juggernaught, Fish
         </ModalHeader>
-        <ModalBody padded={true}>
+        <FilesContainer padded={true}>
           <MediaManagerThing {...request} />
-        </ModalBody>
+        </FilesContainer>
       </ModalFullscreen>
     </Modal>
   )
@@ -49,9 +54,9 @@ function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
   }, [offset, limit, directory])
 
   if (!list) return <div>Loading...</div>
-  const numPages = Math.ceil(list.totalCount / limit)
-  const lastItemIndexOnPage = offset + limit
-  const currentPageIndex = lastItemIndexOnPage / limit
+  const numPages = Math.ceil(list.totalCount / list.limit)
+  const lastItemIndexOnPage = list.offset + list.limit
+  const currentPageIndex = lastItemIndexOnPage / list.limit
 
   let pageLinks = []
 
