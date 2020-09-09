@@ -68,7 +68,7 @@ mutation UpdateBlogPost(
     <StrapiWrapper>
       <Layout preview={preview}>
         <Container>
-          <Header cms="Strapi" />
+          <Header />
           {router.isFallback ? (
             <PostTitle>Loading…</PostTitle>
           ) : (
