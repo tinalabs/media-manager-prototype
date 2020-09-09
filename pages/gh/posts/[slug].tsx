@@ -10,13 +10,15 @@ import PostTitle from '../../../components/post-title';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import { useCMS, usePlugin } from 'tinacms';
-import { useGithubMarkdownForm, GithubMediaStore } from 'react-tinacms-github';
+import {
+  useGithubMarkdownForm,
+  GithubMediaStore,
+  TinacmsGithubProvider,
+} from 'react-tinacms-github';
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github';
 
 export default function Post({ file, error, preview }) {
   const cms = useCMS();
-
-  console.log({ file, error });
 
   const [post, form] = useGithubMarkdownForm(file, {
     label: 'Post',
@@ -67,6 +69,11 @@ export default function Post({ file, error, preview }) {
   }
   return (
     <Layout preview={preview}>
+      <TinacmsGithubProvider
+        onLogin={onLogin}
+        onLogout={onLogout}
+        error={error}
+      />
       <Container>
         <Header cms='GitHub' />
         {router.isFallback ? (
@@ -142,3 +149,24 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
+const onLogin = async () => {
+  const token = localStorage.getItem('tinacms-github-token') || null;
+  const headers = new Headers();
+
+  if (token) {
+    headers.append('Authorization', 'Bearer ' + token);
+  }
+
+  const resp = await fetch(`/api/preview`, { headers: headers });
+  const data = await resp.json();
+
+  if (resp.status == 200) window.location.href = window.location.pathname;
+  else throw new Error(data.message);
+};
+
+const onLogout = () => {
+  return fetch(`/api/reset-preview`).then(() => {
+    window.location.reload();
+  });
+};
