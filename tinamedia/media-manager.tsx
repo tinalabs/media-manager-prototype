@@ -76,7 +76,13 @@ function MediaManagerThing() {
         </li>
       ))}
       <h3>Pagination</h3>
-      <button onClick={() => setOffset(list.nextOffset)}>Next Page</button>
+      {offset > 0 && (
+        <button onClick={() => setOffset(list.nextOffset)}>Previous</button>
+      )}{' '}
+      –{' '}
+      {list.nextOffset && (
+        <button onClick={() => setOffset(list.nextOffset)}>Next </button>
+      )}
     </div>
   );
 }
