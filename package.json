@@ -18,6 +18,7 @@
     "react-markdown": "^4.3.1",
     "react-tinacms-editor": "^0.29.0",
     "react-tinacms-github": "^0.29.0",
+    "react-tinacms-inline": "^0.29.0",
     "react-tinacms-strapi": "^0.29.0",
     "remark": "11.0.2",
     "remark-html": "10.0.0",
