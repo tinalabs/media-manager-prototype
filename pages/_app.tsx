@@ -1,6 +1,7 @@
 import '../styles/index.css';
 import { TinaProvider, TinaCMS } from 'tinacms';
 import { GithubClient } from 'react-tinacms-github';
+import { MediaManager } from '../tinamedia/media-manager';
 
 export default function MyApp({ Component, pageProps }) {
   const cms = React.useMemo(() => {
@@ -21,6 +22,7 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <TinaProvider cms={cms}>
       <Component {...pageProps} />
+      <MediaManager />
       <EditLink cms={cms} />
     </TinaProvider>
   );
