@@ -12,10 +12,10 @@ import { useEffect } from 'react';
 import { useCMS, usePlugin } from 'tinacms';
 import {
   useGithubMarkdownForm,
-  GithubMediaStore,
   TinacmsGithubProvider,
 } from 'react-tinacms-github';
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github';
+import { GithubMediaStore } from '../../../lib/github-media-store';
 
 export default function Post({ file, error, preview }) {
   const cms = useCMS();
@@ -60,6 +60,8 @@ export default function Post({ file, error, preview }) {
 
   useEffect(() => {
     cms.media.store = new GithubMediaStore(cms.api.github);
+    // @ts-ignore
+    window.github = cms.api.github;
   }, []);
 
   const router = useRouter();
