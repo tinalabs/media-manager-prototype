@@ -47,6 +47,29 @@ function MediaManagerThing() {
     cms.media.store.list({ offset, limit, directory }).then(setList);
   }, [offset, limit, directory]);
 
+  const numPages = Math.ceil(list.totalCount / limit);
+  const lastItemIndexOnPage = offset + limit;
+  const currentPageIndex = lastItemIndexOnPage / limit;
+
+  let pageLinks = [];
+
+  for (let i = 0; i < numPages; i++) {
+    const active = i + 1 === currentPageIndex;
+    pageLinks.push(
+      <button
+        style={{
+          padding: '0.5rem',
+          margin: '0 0.5rem',
+          background: active ? 'black' : '',
+          color: active ? 'white' : '',
+        }}
+        onClick={() => setOffset(i * limit)}
+      >
+        {i + 1}
+      </button>
+    );
+  }
+
   return (
     <div>
       <h3>Breadcrumbs</h3>
@@ -75,14 +98,7 @@ function MediaManagerThing() {
           {item.type === 'dir' && '/'}
         </li>
       ))}
-      <h3>Pagination</h3>
-      {offset > 0 && (
-        <button onClick={() => setOffset(list.nextOffset)}>Previous</button>
-      )}{' '}
-      –{' '}
-      {list.nextOffset && (
-        <button onClick={() => setOffset(list.nextOffset)}>Next </button>
-      )}
+      {pageLinks}
     </div>
   );
 }

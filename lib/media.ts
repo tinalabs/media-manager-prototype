@@ -23,4 +23,5 @@ export interface MediaList {
   limit?: number;
   offset?: number;
   nextOffset?: number;
+  totalCount: number;
 }

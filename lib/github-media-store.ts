@@ -22,6 +22,7 @@ export class GithubMediaStore extends BaseStore implements MediaStore {
       offset,
       limit,
       nextOffset: nextOffset(offset, limit, items.length),
+      totalCount: items.length,
     };
   }
 }
