@@ -1,65 +1,61 @@
-import {
-  useCMS,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFullscreen,
-} from 'tinacms';
-import { useEffect, useState } from 'react';
-import { MediaList } from '../lib/media';
+import { useCMS, Modal, ModalHeader, ModalBody, ModalFullscreen } from 'tinacms'
+import { useEffect, useState } from 'react'
+import { MediaList } from '../lib/media'
 
 export interface MediaRequest {
-  limit?: number;
-  directory?: string;
+  limit?: number
+  directory?: string
 }
 
 export function MediaManager() {
-  const cms = useCMS();
+  const cms = useCMS()
 
-  const [request, setRequest] = useState<any>();
+  const [request, setRequest] = useState<MediaRequest | undefined>()
 
   useEffect(() => {
     return cms.events.subscribe('media:open', ({ type, ...request }) => {
-      setRequest(request);
-    });
-  }, []);
+      setRequest(request)
+    })
+  }, [])
 
-  if (!request) return null;
+  if (!request) return null
 
   return (
     <Modal>
       <ModalFullscreen>
-        <ModalHeader>I'm the Juggernaught, Fish</ModalHeader>
+        <ModalHeader close={() => setRequest(undefined)}>
+          I'm the Juggernaught, Fish
+        </ModalHeader>
         <ModalBody padded={true}>
           <MediaManagerThing {...request} />
         </ModalBody>
       </ModalFullscreen>
     </Modal>
-  );
+  )
 }
 function MediaManagerThing(props: MediaRequest) {
   const [directory, setDirectory] = useState<string | undefined>(
     props.directory
-  );
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(props.limit);
-  const [list, setList] = useState<MediaList>();
-  const cms = useCMS();
+  )
+  const [offset, setOffset] = useState(0)
+  const [limit, setLimit] = useState(props.limit)
+  const [list, setList] = useState<MediaList>()
+  const cms = useCMS()
 
   useEffect(() => {
     // @ts-ignore
-    cms.media.store.list({ offset, limit, directory }).then(setList);
-  }, [offset, limit, directory]);
+    cms.media.store.list({ offset, limit, directory }).then(setList)
+  }, [offset, limit, directory])
 
-  if (!list) return <div>Loading...</div>;
-  const numPages = Math.ceil(list.totalCount / limit);
-  const lastItemIndexOnPage = offset + limit;
-  const currentPageIndex = lastItemIndexOnPage / limit;
+  if (!list) return <div>Loading...</div>
+  const numPages = Math.ceil(list.totalCount / limit)
+  const lastItemIndexOnPage = offset + limit
+  const currentPageIndex = lastItemIndexOnPage / limit
 
-  let pageLinks = [];
+  let pageLinks = []
 
   for (let i = 0; i < numPages; i++) {
-    const active = i + 1 === currentPageIndex;
+    const active = i + 1 === currentPageIndex
     pageLinks.push(
       <button
         style={{
@@ -72,7 +68,7 @@ function MediaManagerThing(props: MediaRequest) {
       >
         {i + 1}
       </button>
-    );
+    )
   }
 
   return (
@@ -83,7 +79,7 @@ function MediaManagerThing(props: MediaRequest) {
         directory.split('/').map((part, index, parts) => (
           <button
             onClick={() => {
-              setDirectory(parts.slice(0, index + 1).join('/'));
+              setDirectory(parts.slice(0, index + 1).join('/'))
             }}
           >
             {part}/
@@ -94,8 +90,8 @@ function MediaManagerThing(props: MediaRequest) {
         <li
           onClick={() => {
             if (item.type === 'dir') {
-              setDirectory(item.directory + item.filename);
-              setOffset(0);
+              setDirectory(item.directory + item.filename)
+              setOffset(0)
             }
           }}
         >
@@ -105,5 +101,5 @@ function MediaManagerThing(props: MediaRequest) {
       ))}
       {pageLinks}
     </div>
-  );
+  )
 }
