@@ -9,6 +9,7 @@ export default function MyApp({ Component, pageProps }) {
     return new TinaCMS({
       enabled: pageProps.preview,
       sidebar: true,
+      toolbar: pageProps.toolbar,
       apis: {
         github: new GithubClient({
           proxy: '/api/proxy-github',
