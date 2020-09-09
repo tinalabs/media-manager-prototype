@@ -28,7 +28,7 @@ export default function PostHeader({
         {coverImageComponent ? (
           coverImageComponent
         ) : (
-          <CoverImage title={title} src={coverImage} />
+          <CoverImage title={title} src={coverImage} slug="" />
         )}
       </div>
       <div className="max-w-2xl mx-auto">
