@@ -87,29 +87,52 @@ function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
           </button>
         ))}
       <h3>Items</h3>
-      {list.items.map((item) => (
-        <li
-          onClick={() => {
-            if (item.type === 'dir') {
-              setDirectory(item.path)
-              setOffset(0)
-            }
-          }}
-        >
-          {item.filename}
-          {item.type === 'dir' && '/'}
-          {onSelect && item.type === 'file' && (
-            <button
-              style={{ marginLeft: '5rem' }}
-              onClick={() => {
-                onSelect(item)
-              }}
-            >
-              Insert
-            </button>
-          )}
-        </li>
-      ))}
+      <ul style={{ display: 'flex', flexDirection: 'column' }}>
+        {list.items.map((item) => (
+          <li
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              maxWidth: '800px',
+              margin: '0.5rem',
+              border: '1px solid pink',
+            }}
+            onClick={() => {
+              if (item.type === 'dir') {
+                setDirectory(item.path)
+                setOffset(0)
+              }
+            }}
+          >
+            <img
+              src={
+                item.previewSrc ||
+                'http://fordesigner.com/imguploads/Image/cjbc/zcool/png20080526/1211755375.png'
+              }
+              style={{ width: '100px', marginRight: '1rem' }}
+            />
+            <span style={{ flexGrow: '1' }}>
+              {item.filename}
+              {item.type === 'dir' && '/'}
+            </span>
+            {onSelect && item.type === 'file' && (
+              <div style={{ minWidth: '100px' }}>
+                <button
+                  style={{
+                    border: '1px solid aquamarine',
+                    padding: '0.25rem 0.5rem',
+                  }}
+                  onClick={() => {
+                    onSelect(item)
+                  }}
+                >
+                  Insert
+                </button>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
       {pageLinks}
       <h4>Page Size</h4>
       {[5, 10, 50, 100].map((size) => {
