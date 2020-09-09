@@ -8,7 +8,10 @@ import {
 import { useEffect, useState } from 'react';
 import { MediaList } from '../lib/media';
 
-export interface MediaRequest {}
+export interface MediaRequest {
+  limit?: number;
+  directory?: string;
+}
 
 export function MediaManager() {
   const cms = useCMS();
@@ -21,25 +24,26 @@ export function MediaManager() {
     });
   }, []);
 
-  // if (!request) return null;
+  if (!request) return null;
 
   return (
     <Modal>
       <ModalFullscreen>
         <ModalHeader>I'm the Juggernaught, Fish</ModalHeader>
         <ModalBody padded={true}>
-          <MediaManagerThing />
+          <MediaManagerThing {...request} />
         </ModalBody>
       </ModalFullscreen>
     </Modal>
   );
 }
-
-function MediaManagerThing() {
-  const [directory, setDirectory] = useState<string | undefined>();
+function MediaManagerThing(props: MediaRequest) {
+  const [directory, setDirectory] = useState<string | undefined>(
+    props.directory
+  );
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(4);
-  const [list, setList] = useState<MediaList>({ items: [] });
+  const [limit, setLimit] = useState(props.limit);
+  const [list, setList] = useState<MediaList>();
   const cms = useCMS();
 
   useEffect(() => {
@@ -47,6 +51,7 @@ function MediaManagerThing() {
     cms.media.store.list({ offset, limit, directory }).then(setList);
   }, [offset, limit, directory]);
 
+  if (!list) return <div>Loading...</div>;
   const numPages = Math.ceil(list.totalCount / limit);
   const lastItemIndexOnPage = offset + limit;
   const currentPageIndex = lastItemIndexOnPage / limit;
