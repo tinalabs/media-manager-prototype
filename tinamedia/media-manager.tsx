@@ -100,6 +100,23 @@ function MediaManagerThing(props: MediaRequest) {
         </li>
       ))}
       {pageLinks}
+      <h4>Page Size</h4>
+      {[5, 10, 50, 100].map((size) => {
+        let active = limit === size
+        return (
+          <button
+            style={{
+              padding: '0.5rem',
+              margin: '0 0.5rem',
+              background: active ? 'black' : '',
+              color: active ? 'white' : '',
+            }}
+            onClick={() => setLimit(size)}
+          >
+            {size}
+          </button>
+        )
+      })}
     </div>
   )
 }
