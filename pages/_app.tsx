@@ -24,7 +24,7 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <TinaProvider cms={cms}>
       <Component {...pageProps} />
-      <MediaManager />
+      {/*<MediaManager />*/}
       <EditLink cms={cms} />
     </TinaProvider>
   )
