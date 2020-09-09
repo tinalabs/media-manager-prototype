@@ -5,6 +5,8 @@ import {
 
 export interface Media extends BaseMedia {
   type: 'file' | 'dir'
+  id: string
+  path: string
   previewSrc?: string
 }
 

@@ -91,7 +91,7 @@ function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
         <li
           onClick={() => {
             if (item.type === 'dir') {
-              setDirectory(item.directory + item.filename)
+              setDirectory(item.path)
               setOffset(0)
             }
           }}

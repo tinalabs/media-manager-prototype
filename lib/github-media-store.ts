@@ -20,6 +20,8 @@ export class GithubMediaStore extends BaseStore implements MediaStore {
     return {
       items: items
         .map((item) => ({
+          id: item.path,
+          path: item.path,
           filename: item.name,
           directory: item.path.slice(0, item.path.length - item.name.length),
           type: item.type,
