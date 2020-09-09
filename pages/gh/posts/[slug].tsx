@@ -61,7 +61,7 @@ export default function Post({ file, error, preview }) {
   useEffect(() => {
     cms.media.store = new GithubMediaStore(cms.api.github);
     // @ts-ignore
-    window.github = cms.api.github;
+    window.github = cms.media.store;
   }, []);
 
   const router = useRouter();
