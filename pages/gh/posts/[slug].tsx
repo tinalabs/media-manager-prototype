@@ -16,6 +16,8 @@ import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github';
 export default function Post({ file, error, preview }) {
   const cms = useCMS();
 
+  console.log({ file, error });
+
   const [post, form] = useGithubMarkdownForm(file, {
     label: 'Post',
     fields: [
@@ -60,7 +62,7 @@ export default function Post({ file, error, preview }) {
 
   const router = useRouter();
 
-  if (!router.isFallback && !post?.slug) {
+  if (!router.isFallback && !file?.fileRelativePath) {
     return <ErrorPage statusCode={404} />;
   }
   return (
@@ -96,18 +98,14 @@ export default function Post({ file, error, preview }) {
 
 export async function getStaticProps({ params, preview, previewData }) {
   if (preview) {
-    const props = await getGithubPreviewProps({
+    return getGithubPreviewProps({
       ...previewData,
       fileRelativePath: `_posts/${params.slug}.md`,
       parse: parseMarkdown,
     });
-
-    props.props.file.data.slug = params.slug;
-
-    return props;
   }
 
-  const post = getPostBySlug(params.slug, [
+  const { content: markdownBody, ...frontmatter } = getPostBySlug(params.slug, [
     'title',
     'date',
     'slug',
@@ -121,7 +119,10 @@ export async function getStaticProps({ params, preview, previewData }) {
     props: {
       file: {
         fileRelativePath: `_posts/${params.slug}.md`,
-        data: post,
+        data: {
+          frontmatter,
+          markdownBody,
+        },
       },
     },
   };
