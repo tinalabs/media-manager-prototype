@@ -14,7 +14,20 @@ import { InlineForm, InlineText, InlineImage } from 'react-tinacms-inline'
 import { InlineWysiwyg } from 'react-tinacms-editor'
 import ReactMarkdown from 'react-markdown'
 
-const saveMutation = `
+export default function Post({ post: initialPost, preview }) {
+  const router = useRouter()
+  if (!router.isFallback && !initialPost?.slug) {
+    return <ErrorPage statusCode={404} />
+  }
+
+  const cms = useCMS()
+
+  const formConfig = {
+    id: initialPost.id,
+    label: 'Blog Post',
+    initialValues: initialPost,
+    onSubmit: async (values) => {
+      const saveMutation = `
 mutation UpdateBlogPost(
   $id: ID!
   $title: String
@@ -32,20 +45,6 @@ mutation UpdateBlogPost(
     }
   }
 }`
-
-export default function Post({ post: initialPost, preview }) {
-  const router = useRouter()
-  if (!router.isFallback && !initialPost?.slug) {
-    return <ErrorPage statusCode={404} />
-  }
-
-  const cms = useCMS()
-
-  const formConfig = {
-    id: initialPost.id,
-    label: 'Blog Post',
-    initialValues: initialPost,
-    onSubmit: async (values) => {
       const response = await cms.api.strapi.fetchGraphql(saveMutation, {
         id: values.id,
         title: values.title,
@@ -158,6 +157,7 @@ export async function getStaticProps({ params, preview, previewData }) {
       post,
       preview,
       previewData,
+      toolbar: true,
     },
   }
 }

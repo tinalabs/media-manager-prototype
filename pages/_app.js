@@ -7,6 +7,7 @@ export default function MyApp({ Component, pageProps }) {
     return new TinaCMS({
       enabled: pageProps.preview,
       sidebar: true,
+      toolbar: pageProps.toolbar,
       apis: {
         strapi: new StrapiClient(process.env.STRAPI_URL),
       },

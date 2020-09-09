@@ -76,6 +76,11 @@ export async function getStaticProps({ preview, previewData }) {
   }
 
   return {
-    props: { allPosts: postResults.data.blogPosts, preview, previewData },
+    props: {
+      allPosts: postResults.data.blogPosts,
+      preview,
+      previewData,
+      toolbar: true,
+    },
   }
 }
