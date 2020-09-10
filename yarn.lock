@@ -1195,6 +1195,11 @@
   dependencies:
     webfontloader "^1.6.28"
 
+"@tinacms/webpack-helpers@^0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@tinacms/webpack-helpers/-/webpack-helpers-0.29.0.tgz#7a75c1a4eba6d0ce821da7928f5bba595d702a4e"
+  integrity sha512-//TpgJDGk5TE56s0CsC+gPSeIpDT2os5TyO5+bqA1WN5fvIXw5h9le0U+xTuoyPk7QSDMB4VWm4QMjNWUJSaEQ==
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
