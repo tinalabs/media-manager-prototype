@@ -17,7 +17,7 @@ import {
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
 import { GithubMediaStore } from '../../../lib/github-media-store'
 
-export default function Post({ file, error, preview }) {
+export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
 
   const [post, form] = useGithubMarkdownForm(file, {
@@ -47,6 +47,7 @@ export default function Post({ file, error, preview }) {
         name: 'frontmatter.coverImage',
         component: 'image',
         label: 'Cover Image',
+        parse: (filename) => `/assets/blog/${slug}/${filename}`,
         //@ts-ignore
         previewSrc(values, { input }) {
           const src = `public` + input.value
@@ -56,6 +57,7 @@ export default function Post({ file, error, preview }) {
       { name: 'markdownBody', component: 'textarea', label: 'Body' },
     ],
   })
+  console.log(post)
   usePlugin(form)
 
   useEffect(() => {
@@ -107,11 +109,14 @@ export default function Post({ file, error, preview }) {
 
 export async function getStaticProps({ params, preview, previewData }) {
   if (preview) {
-    return getGithubPreviewProps({
+    const staticProps = await getGithubPreviewProps({
       ...previewData,
       fileRelativePath: `_posts/${params.slug}.md`,
       parse: parseMarkdown,
     })
+    // @ts-ignore
+    staticProps.props.slug = params.slug
+    return staticProps
   }
 
   const { content: markdownBody, ...frontmatter } = getPostBySlug(params.slug, [
@@ -126,6 +131,7 @@ export async function getStaticProps({ params, preview, previewData }) {
 
   return {
     props: {
+      slug: params.slug,
       file: {
         fileRelativePath: `_posts/${params.slug}.md`,
         data: {

@@ -33,13 +33,17 @@ export function MediaManager() {
           I'm the Juggernaught, Fish
         </ModalHeader>
         <FilesContainer padded={true}>
-          <MediaManagerThing {...request} />
+          <MediaManagerThing {...request} close={() => setRequest(undefined)} />
         </FilesContainer>
       </ModalFullscreen>
     </Modal>
   )
 }
-function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
+function MediaManagerThing({
+  close,
+  onSelect,
+  ...props
+}: MediaRequest & { close(): void }) {
   const [directory, setDirectory] = useState<string | undefined>(
     props.directory
   )
@@ -129,6 +133,7 @@ function MediaManagerThing({ onSelect, ...props }: MediaRequest) {
                   }}
                   onClick={() => {
                     onSelect(item)
+                    close()
                   }}
                 >
                   Insert
