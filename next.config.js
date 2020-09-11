@@ -1,3 +1,5 @@
+const { aliasTinaDev, aliasRelative } = require('@tinacms/webpack-helpers')
+const path = require('path')
 module.exports = {
   env: {
     STRAPI_URL: process.env.STRAPI_URL,
@@ -8,6 +10,12 @@ module.exports = {
   webpack(config) {
     if (process.env.TINA) {
       aliasTinaDev(config, process.env.TINA)
+      aliasRelative(
+        config,
+        'styled-components',
+        path.resolve(process.env.TINA, './node_modules/styled-components')
+      )
     }
+    return config
   },
 }
