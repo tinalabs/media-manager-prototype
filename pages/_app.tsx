@@ -1,14 +1,11 @@
 import '../styles/index.css'
-import { TinaProvider, TinaCMS, useCMS } from 'tinacms'
+import { TinaProvider, TinaCMS, useCMS, Media } from 'tinacms'
 import { GithubClient } from 'react-tinacms-github'
 import { StrapiClient } from 'react-tinacms-strapi'
-import { MediaManager } from '../tinamedia/media-manager'
-import { MediaCMS } from '../lib/cms'
-import { Media } from '../lib/media'
 
 export default function MyApp({ Component, pageProps }) {
   const cms = React.useMemo(() => {
-    return new MediaCMS({
+    return new TinaCMS({
       enabled: pageProps.preview,
       sidebar: true,
       toolbar: pageProps.toolbar,
@@ -27,7 +24,6 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <TinaProvider cms={cms}>
       <Component {...pageProps} />
-      <MediaManager />
       <EditLink cms={cms} />
       <OpenMediaButton />
     </TinaProvider>
@@ -52,8 +48,10 @@ const OpenMediaButton = () => {
   return (
     <button
       onClick={() => {
+        console.log('open media')
         // @ts-ignore
-        cms.media.open({
+        cms.events.dispatch({
+          type: 'media:open',
           onSelect(media: Media) {
             alert('Selected: ' + media.filename)
           },
