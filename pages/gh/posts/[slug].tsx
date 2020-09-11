@@ -16,6 +16,7 @@ import {
   GithubMediaStore,
 } from 'react-tinacms-github'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
+import path from 'path'
 
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
@@ -47,10 +48,15 @@ export default function Post({ slug, file, error, preview }) {
         name: 'frontmatter.coverImage',
         component: 'image',
         label: 'Cover Image',
-        parse: (filename) => `/assets/blog/${slug}/${filename}`,
+        parse: (media) => {
+          if (!media) return ''
+          return media.id.replace('public', '')
+        },
+        //@ts-ignore
+        uploadDir: () => `public/assets/`,
         //@ts-ignore
         previewSrc(values, { input }) {
-          const src = `public` + input.value
+          const src = path.join(`public`, input.value)
           return cms.media.store.previewSrc(src)
         },
       },
