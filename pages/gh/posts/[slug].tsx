@@ -13,9 +13,9 @@ import { useCMS, usePlugin } from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
+  GithubMediaStore,
 } from 'react-tinacms-github'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
-import { GithubMediaStore } from '../../../lib/github-media-store'
 
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
