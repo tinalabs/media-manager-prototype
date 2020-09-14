@@ -88,13 +88,6 @@ mutation UpdateBlogPost(
                       cms.enabled ? (
                         <InlineImage
                           name="coverImage.url"
-                          previewSrc={(formValues) =>
-                            process.env.STRAPI_URL +
-                            //@ts-ignore
-                            cms.media.store.getFilePath(
-                              formValues.coverImage.url
-                            )
-                          }
                           uploadDir={() => '/uploads'}
                           //@ts-ignore
                           parse={(media: Media) => media?.id}
