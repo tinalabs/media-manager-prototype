@@ -15,6 +15,7 @@ import {
   TinacmsGithubProvider,
   GithubMediaStore,
 } from 'react-tinacms-github'
+import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
 import path from 'path'
 
@@ -63,7 +64,7 @@ export default function Post({ slug, file, error, preview }) {
       { name: 'markdownBody', component: 'textarea', label: 'Body' },
     ],
   })
-  console.log(post)
+
   usePlugin(form)
 
   useEffect(() => {
@@ -89,7 +90,7 @@ export default function Post({ slug, file, error, preview }) {
         {router.isFallback ? (
           <PostTitle>Loading…</PostTitle>
         ) : (
-          <>
+          <InlineForm form={form}>
             <article className="mb-32">
               <Head>
                 <title>{post.frontmatter.title} | TinaCMS + GitHub</title>
@@ -101,12 +102,30 @@ export default function Post({ slug, file, error, preview }) {
               <PostHeader
                 title={post.frontmatter.title}
                 coverImage={post.frontmatter.coverImage}
+                coverImageComponent={
+                  cms.enabled ? (
+                    <InlineImage
+                      name="frontmatter.coverImage"
+                      previewSrc={(formValues) => {
+                        const src = `public${formValues.frontmatter.coverImage}`
+
+                        return cms.media.store.previewSrc(src)
+                      }}
+                      uploadDir={() => `public/assets/`}
+                      parse={(media) => {
+                        // doesn't not write 'public' to source
+                        // returns the file path from the public dir
+                        return media.id.split('public').join('')
+                      }}
+                    />
+                  ) : null
+                }
                 date={post.frontmatter.date}
                 author={post.frontmatter.author}
               />
               <PostBody content={post.markdownBody} />
             </article>
-          </>
+          </InlineForm>
         )}
       </Container>
     </Layout>
