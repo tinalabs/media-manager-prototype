@@ -15,6 +15,7 @@ import {
   TinacmsGithubProvider,
   GithubMediaStore,
 } from 'react-tinacms-github'
+import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
 import path from 'path'
 
@@ -89,7 +90,7 @@ export default function Post({ slug, file, error, preview }) {
         {router.isFallback ? (
           <PostTitle>Loading…</PostTitle>
         ) : (
-          <>
+          <InlineForm form={form}>
             <article className="mb-32">
               <Head>
                 <title>{post.frontmatter.title} | TinaCMS + GitHub</title>
@@ -101,12 +102,21 @@ export default function Post({ slug, file, error, preview }) {
               <PostHeader
                 title={post.frontmatter.title}
                 coverImage={post.frontmatter.coverImage}
+                coverImageComponent={
+                  cms.enabled ? (
+                    <InlineImage
+                      name="frontmatter.coverImage"
+                      uploadDir={() => `public/assets/`}
+                      parse={(media) => `public/assets/${media.id}`}
+                    />
+                  ) : null
+                }
                 date={post.frontmatter.date}
                 author={post.frontmatter.author}
               />
               <PostBody content={post.markdownBody} />
             </article>
-          </>
+          </InlineForm>
         )}
       </Container>
     </Layout>
