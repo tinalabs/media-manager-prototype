@@ -96,7 +96,8 @@ mutation UpdateBlogPost(
                             )
                           }
                           uploadDir={() => '/uploads'}
-                          parse={(filename) => `/uploads/${filename}`}
+                          //@ts-ignore
+                          parse={(media: Media) => media?.id}
                         ></InlineImage>
                       ) : null
                     }
