@@ -48,11 +48,8 @@ const OpenMediaButton = () => {
   return (
     <button
       onClick={() => {
-        console.log('open media')
         // @ts-ignore
-        cms.events.dispatch({
-          type: 'media:open',
-          directory: 'public/assets',
+        cms.media.open({
           onSelect(media: Media) {
             alert('Selected: ' + media.filename)
           },
