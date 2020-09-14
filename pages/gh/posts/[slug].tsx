@@ -64,7 +64,7 @@ export default function Post({ slug, file, error, preview }) {
       { name: 'markdownBody', component: 'textarea', label: 'Body' },
     ],
   })
-  console.log(post)
+
   usePlugin(form)
 
   useEffect(() => {
@@ -106,8 +106,17 @@ export default function Post({ slug, file, error, preview }) {
                   cms.enabled ? (
                     <InlineImage
                       name="frontmatter.coverImage"
+                      previewSrc={(formValues) => {
+                        const src = `public${formValues.frontmatter.coverImage}`
+
+                        return cms.media.store.previewSrc(src)
+                      }}
                       uploadDir={() => `public/assets/`}
-                      parse={(media) => `public/assets/${media.id}`}
+                      parse={(media) => {
+                        // doesn't not write 'public' to source
+                        // returns the file path from the public dir
+                        return media.id.split('public').join('')
+                      }}
                     />
                   ) : null
                 }
