@@ -51,7 +51,7 @@ mutation UpdateBlogPost(
         title: values.title,
         content: values.content,
         //@ts-ignore
-        coverImageId: cms.media.store.getFileId(values.coverImage.url),
+        coverImageId: values.coverImage.id,
       })
       if (response.data) {
         cms.alerts.success('Changes saved successfully.')
@@ -89,15 +89,14 @@ mutation UpdateBlogPost(
                     coverImageComponent={
                       cms.enabled ? (
                         <InlineImage
-                          name="coverImage.url"
+                          name="coverImage.id"
                           uploadDir={() => '/uploads'}
                           //@ts-ignore
                           parse={(media: Media) => {
+                            console.log('MEDIA', media)
                             if (!media) return ''
-                            return require('path').join(
-                              media.directory,
-                              media?.filename
-                            )
+                            //@ts-ignore
+                            return media.id
                           }}
                         ></InlineImage>
                       ) : null
@@ -156,6 +155,7 @@ export async function getStaticProps({ params, preview, previewData }) {
         }
         coverImage {
           url
+          id
         }
       }
     }`
