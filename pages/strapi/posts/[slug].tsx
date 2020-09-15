@@ -87,7 +87,7 @@ mutation UpdateBlogPost(
                     coverImageComponent={
                       cms.enabled ? (
                         <InlineImage
-                          name="coverImage.url"
+                          name="coverImage.id"
                           uploadDir={() => '/uploads'}
                           //@ts-ignore
                           parse={(media: Media) => media?.id}
