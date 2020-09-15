@@ -113,8 +113,10 @@ export default function Post({ slug, file, error, preview }) {
                       }}
                       uploadDir={() => `public/assets/`}
                       parse={(media) => {
+                        if (!media) return ''
                         // doesn't not write 'public' to source
                         // returns the file path from the public dir
+                        // @ts-ignore
                         return media.id.split('public').join('')
                       }}
                     />

@@ -13,6 +13,7 @@ import { useForm, usePlugin, useCMS } from 'tinacms'
 import { InlineForm, InlineText, InlineImage } from 'react-tinacms-inline'
 import { InlineWysiwyg } from 'react-tinacms-editor'
 import ReactMarkdown from 'react-markdown'
+import { Media } from 'tinacms'
 
 export default function Post({ post: initialPost, preview }) {
   const router = useRouter()
@@ -64,6 +65,7 @@ mutation UpdateBlogPost(
   const [post, form] = useForm(formConfig)
   usePlugin(form)
 
+  console.log(post.coverImage.url)
   return (
     <StrapiWrapper>
       <Layout preview={preview}>
@@ -90,7 +92,13 @@ mutation UpdateBlogPost(
                           name="coverImage.id"
                           uploadDir={() => '/uploads'}
                           //@ts-ignore
-                          parse={(media: Media) => media?.id}
+                          parse={(media: Media) => {
+                            if (!media) return ''
+                            return require('path').join(
+                              media.directory,
+                              media?.filename
+                            )
+                          }}
                         ></InlineImage>
                       ) : null
                     }
