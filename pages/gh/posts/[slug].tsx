@@ -56,8 +56,8 @@ export default function Post({ slug, file, error, preview }) {
         //@ts-ignore
         uploadDir: () => `public/assets/`,
         //@ts-ignore
-        previewSrc(values, { input }) {
-          const src = path.join(`public`, input.value)
+        previewSrc(value) {
+          const src = path.join(`public`, value)
           return cms.media.store.previewSrc(src)
         },
       },
@@ -106,8 +106,8 @@ export default function Post({ slug, file, error, preview }) {
                   cms.enabled ? (
                     <InlineImage
                       name="frontmatter.coverImage"
-                      previewSrc={(formValues) => {
-                        const src = `public${formValues.frontmatter.coverImage}`
+                      previewSrc={(value) => {
+                        const src = path.join(`public`, value)
 
                         return cms.media.store.previewSrc(src)
                       }}

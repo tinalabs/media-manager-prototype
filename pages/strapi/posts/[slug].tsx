@@ -110,7 +110,20 @@ mutation UpdateBlogPost(
                     }}
                   />
                   <div className="max-w-2xl mx-auto">
-                    <InlineWysiwyg name="content" format="markdown">
+                    <InlineWysiwyg
+                      name="content"
+                      format="markdown"
+                      imageProps={{
+                        // @ts-ignore
+                        parse(media: Media) {
+                          if (!media) return ''
+                          return require('path').join(
+                            media.directory,
+                            media?.filename
+                          )
+                        },
+                      }}
+                    >
                       <ReactMarkdown source={post.content} />
                     </InlineWysiwyg>
                   </div>
