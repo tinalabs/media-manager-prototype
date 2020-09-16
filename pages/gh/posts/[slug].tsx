@@ -19,6 +19,55 @@ import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
 import path from 'path'
 
+class CustomMedia extends GithubMediaStore {
+  persist(files) {
+    return super
+      .persist(
+        files.map(({ directory, file }) => ({
+          directory: path.join('public', directory),
+          file,
+        }))
+      )
+      .then((allMedia) =>
+        allMedia.map((media) => ({
+          ...media,
+          id: media.id.replace('public', ''),
+          directory: media.directory.replace('public', ''),
+        }))
+      )
+  }
+  // @ts-ignore
+  previewSrc(src = '') {
+    return super.previewSrc(path.join('public', src))
+  }
+  list(options) {
+    return (
+      super
+        // @ts-ignore
+        .list({
+          ...options,
+          directory: path.join('public', options.directory || ''),
+        })
+        .then((list) => ({
+          ...list,
+          items: list.items.map((media) => ({
+            ...media,
+            id: media.id.replace('public', ''),
+            directory: media.directory.replace('public', ''),
+          })),
+        }))
+    )
+  }
+  delete(media) {
+    // @ts-ignore
+    return super.delete({
+      ...media,
+      id: path.join('public', media.id),
+      directory: path.join('public', media.directory),
+    })
+  }
+}
+
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
 
@@ -37,9 +86,8 @@ export default function Post({ slug, file, error, preview }) {
             name: 'picture',
             component: 'image',
             label: 'Profile Picture',
-            previewSrc(values, { input }) {
-              const src = `public` + input.value
-              return cms.media.store.previewSrc(src)
+            parse(media) {
+              return media.id
             },
           },
         ],
@@ -49,16 +97,8 @@ export default function Post({ slug, file, error, preview }) {
         name: 'frontmatter.coverImage',
         component: 'image',
         label: 'Cover Image',
-        parse: (media) => {
-          if (!media) return ''
-          return media.id.replace('public', '')
-        },
-        //@ts-ignore
-        uploadDir: () => `public/assets/`,
-        //@ts-ignore
-        previewSrc(value) {
-          const src = path.join(`public`, value)
-          return cms.media.store.previewSrc(src)
+        parse(media) {
+          return media.id
         },
       },
       { name: 'markdownBody', component: 'textarea', label: 'Body' },
@@ -68,7 +108,7 @@ export default function Post({ slug, file, error, preview }) {
   usePlugin(form)
 
   useEffect(() => {
-    cms.media.store = new GithubMediaStore(cms.api.github)
+    cms.media.store = new CustomMedia(cms.api.github)
     // @ts-ignore
     window.github = cms.media.store
   }, [])
@@ -104,21 +144,11 @@ export default function Post({ slug, file, error, preview }) {
                 coverImage={post.frontmatter.coverImage}
                 coverImageComponent={
                   cms.enabled ? (
+                    // @ts-ignore
                     <InlineImage
                       name="frontmatter.coverImage"
-                      previewSrc={(value) => {
-                        const src = path.join(`public`, value)
-
-                        return cms.media.store.previewSrc(src)
-                      }}
-                      uploadDir={() => `public/assets/`}
-                      parse={(media) => {
-                        if (!media) return ''
-                        // doesn't not write 'public' to source
-                        // returns the file path from the public dir
-                        // @ts-ignore
-                        return media.id.split('public').join('')
-                      }}
+                      // @ts-ignore
+                      parse={(media) => media.id}
                     />
                   ) : null
                 }
