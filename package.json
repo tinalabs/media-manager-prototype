@@ -17,14 +17,14 @@
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-markdown": "^4.3.1",
-    "react-tinacms-editor": "^0.29.0",
-    "react-tinacms-github": "^0.29.0",
-    "react-tinacms-inline": "^0.29.0",
-    "react-tinacms-strapi": "^0.29.0",
+    "react-tinacms-editor": "^0.31.0-alpha.2",
+    "react-tinacms-github": "^0.31.0-alpha.1",
+    "react-tinacms-inline": "^0.31.0-alpha.2",
+    "react-tinacms-strapi": "^0.31.0-alpha.2",
     "remark": "11.0.2",
     "remark-html": "10.0.0",
     "styled-components": "^5.2.0",
-    "tinacms": "^0.29.0"
+    "tinacms": "^0.31.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^14.6.4",
