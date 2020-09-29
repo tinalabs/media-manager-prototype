@@ -13,60 +13,13 @@ import { useCMS, usePlugin } from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
-  GithubMediaStore,
 } from 'react-tinacms-github'
 import { InlineForm, InlineImage } from 'react-tinacms-inline'
-import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
-import path from 'path'
-
-class CustomMedia extends GithubMediaStore {
-  persist(files) {
-    return super
-      .persist(
-        files.map(({ directory, file }) => ({
-          directory: path.join('public', directory),
-          file,
-        }))
-      )
-      .then((allMedia) =>
-        allMedia.map((media) => ({
-          ...media,
-          id: media.id.replace('public', ''),
-          directory: media.directory.replace('public', ''),
-        }))
-      )
-  }
-  // @ts-ignore
-  previewSrc(src = '') {
-    return super.previewSrc(path.join('public', src))
-  }
-  list(options) {
-    return (
-      super
-        // @ts-ignore
-        .list({
-          ...options,
-          directory: path.join('public', options.directory || ''),
-        })
-        .then((list) => ({
-          ...list,
-          items: list.items.map((media) => ({
-            ...media,
-            id: media.id.replace('public', ''),
-            directory: media.directory.replace('public', ''),
-          })),
-        }))
-    )
-  }
-  delete(media) {
-    // @ts-ignore
-    return super.delete({
-      ...media,
-      id: path.join('public', media.id),
-      directory: path.join('public', media.directory),
-    })
-  }
-}
+import {
+  getGithubPreviewProps,
+  parseMarkdown,
+  NextGithubMediaStore,
+} from 'next-tinacms-github'
 
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
@@ -87,6 +40,7 @@ export default function Post({ slug, file, error, preview }) {
             component: 'image',
             label: 'Profile Picture',
             parse(media) {
+              if (!media) return
               return media.id
             },
           },
@@ -98,6 +52,7 @@ export default function Post({ slug, file, error, preview }) {
         component: 'image',
         label: 'Cover Image',
         parse(media) {
+          if (!media) return
           return media.id
         },
       },
@@ -108,7 +63,7 @@ export default function Post({ slug, file, error, preview }) {
   usePlugin(form)
 
   useEffect(() => {
-    cms.media.store = new CustomMedia(cms.api.github)
+    cms.media.store = new NextGithubMediaStore(cms.api.github)
     // @ts-ignore
     window.github = cms.media.store
   }, [])
@@ -148,7 +103,10 @@ export default function Post({ slug, file, error, preview }) {
                     <InlineImage
                       name="frontmatter.coverImage"
                       // @ts-ignore
-                      parse={(media) => media.id}
+                      parse={(media) => {
+                        if (!media) return
+                        return media.id
+                      }}
                     />
                   ) : null
                 }
