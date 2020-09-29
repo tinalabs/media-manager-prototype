@@ -16,9 +16,16 @@ import {
 } from 'react-tinacms-github'
 import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
+import { Cloudinary } from 'cloudinary-core'
 
 class CloudinaryMediaStore implements MediaStore {
   accept = '*'
+  api = new Cloudinary({
+    // TODO: Use environment variable
+    cloud_name: 'nolan-forestry-io',
+    secure: true,
+  })
+
   async persist() {
     return []
   }
@@ -32,15 +39,27 @@ class CloudinaryMediaStore implements MediaStore {
 
     const { items } = await response.json()
     return {
-      items,
+      items: items.map((item) => {
+        const previewSrc = this.api.url(item.id, {
+          width: 56,
+          height: 56,
+          crop: 'fill',
+          gravity: 'auto',
+        })
+
+        return {
+          ...item,
+          previewSrc,
+        }
+      }),
       totalCount: items.length,
       limit: 500,
       offset: 0,
       nextOffset: undefined,
     }
   }
-  previewSrc(src: string) {
-    return src
+  previewSrc(publicId: string) {
+    return this.api.url(publicId)
   }
 }
 

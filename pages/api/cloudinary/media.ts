@@ -18,6 +18,7 @@ export default function listMedia(req: NextApiRequest, res: NextApiResponse) {
     (err, { resources }: ResourceApiResponse) => {
       res.json({
         items: resources.map(cloudinaryToTina),
+        // TODO: Additional list info
       })
     }
   )
