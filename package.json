@@ -10,6 +10,7 @@
   "dependencies": {
     "@tinacms/webpack-helpers": "^0.29.0",
     "classnames": "2.2.6",
+    "cloudinary": "^1.23.0",
     "date-fns": "2.10.0",
     "gray-matter": "4.0.2",
     "next": "latest",
