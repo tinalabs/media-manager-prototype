@@ -25,13 +25,17 @@ export default async function listMedia(
 
     let files = response.resources.map(cloudinaryToTina)
 
-    let folders
-
-    if (directory === '""') {
-      ;({ folders } = await cloudinary.api.root_folders())
-    } else {
-      ;({ folders } = await cloudinary.api.sub_folders(directory))
+    //@ts-ignore TODO: Open PR to cloudinary-core
+    cloudinary.api.folders = (directory: string = '""') => {
+      if (directory === '""') {
+        return cloudinary.api.root_folders()
+      } else {
+        return cloudinary.api.sub_folders(directory)
+      }
     }
+
+    // @ts-ignore
+    let { folders } = await cloudinary.api.folders(directory)
 
     folders = folders.map(function (folder: {
       name: string
