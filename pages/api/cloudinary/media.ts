@@ -1,5 +1,6 @@
 import { ResourceApiResponse, v2 as cloudinary } from 'cloudinary'
 import { Media } from 'tinacms'
+import path from 'path'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -21,12 +22,15 @@ export default function listMedia(req, res) {
   )
 }
 
-function cloudinaryToTina(cloudinary: any): Media {
+function cloudinaryToTina(file: any): Media {
+  const filename = path.basename(file.public_id)
+  const directory = path.dirname(file.public_id)
+
   return {
-    id: cloudinary.public_id,
-    filename: '',
-    directory: '',
-    previewSrc: cloudinary.url,
+    id: file.public_id,
+    filename,
+    directory,
+    previewSrc: file.url,
     type: 'file',
   }
 }
