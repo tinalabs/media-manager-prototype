@@ -1,6 +1,7 @@
 import { ResourceApiResponse, v2 as cloudinary } from 'cloudinary'
 import { Media } from 'tinacms'
 import path from 'path'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-export default function listMedia(req, res) {
+export default function listMedia(req: NextApiRequest, res: NextApiResponse) {
   cloudinary.api.resources(
     {
       max_results: 1000,
@@ -33,8 +34,4 @@ function cloudinaryToTina(file: any): Media {
     previewSrc: file.url,
     type: 'file',
   }
-}
-
-interface CloudinaryResource {
-  asset
 }
