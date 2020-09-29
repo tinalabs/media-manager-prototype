@@ -9,7 +9,14 @@ import { getPostBySlug, getAllPosts } from '../../../lib/api'
 import PostTitle from '../../../components/post-title'
 import Head from 'next/head'
 import { useEffect } from 'react'
-import { Media, MediaList, MediaStore, useCMS, usePlugin } from 'tinacms'
+import {
+  Media,
+  MediaList,
+  MediaListOptions,
+  MediaStore,
+  useCMS,
+  usePlugin,
+} from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
@@ -34,18 +41,28 @@ class CloudinaryMediaStore implements MediaStore {
       method: 'DELETE',
     })
   }
-  async list(): Promise<MediaList> {
-    const response = await fetch('/api/cloudinary/media')
+  async list(options: MediaListOptions): Promise<MediaList> {
+    let query = '?'
+
+    if (options.directory) {
+      query += `directory=${encodeURIComponent(options.directory)}`
+    }
+
+    const response = await fetch('/api/cloudinary/media' + query)
 
     const { items } = await response.json()
     return {
       items: items.map((item) => {
-        const previewSrc = this.api.url(item.id, {
-          width: 56,
-          height: 56,
-          crop: 'fill',
-          gravity: 'auto',
-        })
+        let previewSrc: string
+
+        if (item.type === 'file') {
+          previewSrc = this.api.url(item.id, {
+            width: 56,
+            height: 56,
+            crop: 'fill',
+            gravity: 'auto',
+          })
+        }
 
         return {
           ...item,

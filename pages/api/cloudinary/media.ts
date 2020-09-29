@@ -1,5 +1,5 @@
-import { ResourceApiResponse, v2 as cloudinary } from 'cloudinary'
-import { Media } from 'tinacms'
+import { v2 as cloudinary } from 'cloudinary'
+import { Media, MediaListOptions } from 'tinacms'
 import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -9,19 +9,51 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-export default function listMedia(req: NextApiRequest, res: NextApiResponse) {
-  cloudinary.api.resources(
-    {
-      max_results: 1000,
-      prefix: '',
-    },
-    (err, { resources }: ResourceApiResponse) => {
-      res.json({
-        items: resources.map(cloudinaryToTina),
-        // TODO: Additional list info
-      })
+export default async function listMedia(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    const { directory = '""', limit = 500 } = req.query as MediaListOptions
+
+    let query = `folder=${directory}`
+
+    let response = await cloudinary.search
+      .expression(query)
+      .max_results(limit)
+      .execute()
+
+    let files = response.resources.map(cloudinaryToTina)
+
+    let folders
+
+    if (directory === '""') {
+      ;({ folders } = await cloudinary.api.root_folders())
+    } else {
+      ;({ folders } = await cloudinary.api.sub_folders(directory))
     }
-  )
+
+    folders = folders.map(function (folder: {
+      name: string
+      path: string
+    }): Media {
+      'empty-repo/004'
+      return {
+        id: folder.path,
+        type: 'dir',
+        filename: path.basename(folder.path),
+        directory: path.dirname(folder.path),
+      }
+    })
+
+    res.json({
+      items: [...folders, ...files],
+    })
+  } catch (e) {
+    console.log(e)
+    res.status(500)
+    res.json({ e })
+  }
 }
 
 function cloudinaryToTina(file: any): Media {
