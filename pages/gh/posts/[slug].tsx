@@ -9,17 +9,36 @@ import { getPostBySlug, getAllPosts } from '../../../lib/api'
 import PostTitle from '../../../components/post-title'
 import Head from 'next/head'
 import { useEffect } from 'react'
-import { useCMS, usePlugin } from 'tinacms'
+import { MediaList, MediaStore, useCMS, usePlugin } from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
 } from 'react-tinacms-github'
 import { InlineForm, InlineImage } from 'react-tinacms-inline'
-import {
-  getGithubPreviewProps,
-  parseMarkdown,
-  NextGithubMediaStore,
-} from 'next-tinacms-github'
+import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
+
+class CloudinaryMediaStore implements MediaStore {
+  accept = '*'
+  async persist() {
+    return []
+  }
+  async delete() {}
+  async list(): Promise<MediaList> {
+    const response = await fetch('/api/cloudinary/media')
+
+    const { items } = await response.json()
+    return {
+      items,
+      totalCount: items.length,
+      limit: 500,
+      offset: 0,
+      nextOffset: undefined,
+    }
+  }
+  previewSrc(src: string) {
+    return src
+  }
+}
 
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
@@ -63,7 +82,7 @@ export default function Post({ slug, file, error, preview }) {
   usePlugin(form)
 
   useEffect(() => {
-    cms.media.store = new NextGithubMediaStore(cms.api.github)
+    cms.media.store = new CloudinaryMediaStore()
     // @ts-ignore
     window.github = cms.media.store
   }, [])
