@@ -9,7 +9,7 @@ import { getPostBySlug, getAllPosts } from '../../../lib/api'
 import PostTitle from '../../../components/post-title'
 import Head from 'next/head'
 import { useEffect } from 'react'
-import { MediaList, MediaStore, useCMS, usePlugin } from 'tinacms'
+import { Media, MediaList, MediaStore, useCMS, usePlugin } from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
@@ -22,7 +22,11 @@ class CloudinaryMediaStore implements MediaStore {
   async persist() {
     return []
   }
-  async delete() {}
+  async delete(media: Media) {
+    await fetch(`/api/cloudinary/media/${encodeURIComponent(media.id)}`, {
+      method: 'DELETE',
+    })
+  }
   async list(): Promise<MediaList> {
     const response = await fetch('/api/cloudinary/media')
 
