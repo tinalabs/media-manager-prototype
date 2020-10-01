@@ -28,8 +28,7 @@ import { Cloudinary } from 'cloudinary-core'
 class CloudinaryMediaStore implements MediaStore {
   accept = '*'
   api = new Cloudinary({
-    // TODO: Use environment variable
-    cloud_name: 'nolan-forestry-io',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     secure: true,
   })
 
