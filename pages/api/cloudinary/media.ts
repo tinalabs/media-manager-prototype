@@ -2,6 +2,14 @@ import { v2 as cloudinary } from 'cloudinary'
 import { Media, MediaListOptions } from 'tinacms'
 import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
+import multer from 'multer'
+import { promisify } from 'util'
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,10 +17,35 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-export default async function listMedia(
+export default async function handleMedia(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  switch (req.method) {
+    case 'GET':
+      return listMedia(req, res)
+    case 'POST':
+      return uploadMedia(req, res)
+    default:
+      res.end(404)
+  }
+}
+
+async function uploadMedia(req, res) {
+  const upload = promisify(multer({ dest: '/tmp' }).single('file'))
+
+  await upload(req, res)
+  const { directory, filename } = req.body
+  const public_id = path.join(directory, filename).replace(/^\//, '')
+
+  const result = await cloudinary.uploader.upload(req.file.path, {
+    public_id,
+  })
+
+  res.json(result)
+}
+
+async function listMedia(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { directory = '""', limit = 500 } = req.query as MediaListOptions
 

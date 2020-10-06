@@ -14,6 +14,7 @@ import {
   MediaList,
   MediaListOptions,
   MediaStore,
+  MediaUploadOptions,
   useCMS,
   usePlugin,
 } from 'tinacms'
@@ -32,7 +33,17 @@ class CloudinaryMediaStore implements MediaStore {
     secure: true,
   })
 
-  async persist() {
+  async persist(media: MediaUploadOptions[]) {
+    const { file, directory } = media[0]
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('directory', directory)
+    formData.append('filename', file.name)
+
+    await fetch(`/api/cloudinary/media`, {
+      method: 'POST',
+      body: formData,
+    })
     return []
   }
   async delete(media: Media) {
