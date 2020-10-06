@@ -46,7 +46,7 @@ class CloudinaryMediaStore implements MediaStore {
       body: formData,
     })
 
-    if (res.status % 100 != 2) {
+    if (res.status != 200) {
       const responseData = await res.json()
       throw new Error(responseData.message)
     }

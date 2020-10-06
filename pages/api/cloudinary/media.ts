@@ -32,26 +32,30 @@ export default async function handleMedia(
 }
 
 async function uploadMedia(req, res) {
-  const upload = promisify(multer({ dest: '/tmp' }).single('file'))
+  const upload = promisify(
+    multer({
+      storage: multer.diskStorage({
+        directory: (req, file, cb) => {
+          cb(null, '/tmp')
+        },
+        filename: (req, file, cb) => {
+          cb(null, file.originalname)
+        },
+      }),
+    }).single('file')
+  )
 
   await upload(req, res)
-  const { directory, filename } = req.body
-  const filebase = path.basename(filename, path.extname(filename))
-  const public_id = path.join(directory, filebase).replace(/^\//, '')
+
+  const { directory } = req.body
 
   const result = await cloudinary.uploader.upload(req.file.path, {
-    public_id,
+    folder: directory.replace(/^\//, ''),
+    use_filename: true,
     overwrite: false,
   })
 
-  if (result.existing) {
-    res.status(409)
-    res.json({
-      message: `A file with the name ${filename} already exists.`,
-    })
-  } else {
-    res.json(result)
-  }
+  res.json(result)
 }
 
 async function listMedia(req: NextApiRequest, res: NextApiResponse) {
