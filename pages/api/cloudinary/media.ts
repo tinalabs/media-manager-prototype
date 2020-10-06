@@ -36,7 +36,8 @@ async function uploadMedia(req, res) {
 
   await upload(req, res)
   const { directory, filename } = req.body
-  const public_id = path.join(directory, filename).replace(/^\//, '')
+  const filebase = path.basename(filename, path.extname(filename))
+  const public_id = path.join(directory, filebase).replace(/^\//, '')
 
   const result = await cloudinary.uploader.upload(req.file.path, {
     public_id,
