@@ -9,97 +9,15 @@ import { getPostBySlug, getAllPosts } from '../../../lib/api'
 import PostTitle from '../../../components/post-title'
 import Head from 'next/head'
 import { useEffect } from 'react'
-import {
-  Media,
-  MediaList,
-  MediaListOptions,
-  MediaStore,
-  MediaUploadOptions,
-  useCMS,
-  usePlugin,
-} from 'tinacms'
+import { useCMS, usePlugin } from 'tinacms'
 import {
   useGithubMarkdownForm,
   TinacmsGithubProvider,
 } from 'react-tinacms-github'
 import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
-import { Cloudinary } from 'cloudinary-core'
 import { Image } from 'cloudinary-react'
-
-class CloudinaryMediaStore implements MediaStore {
-  accept = '*'
-  api = new Cloudinary({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    secure: true,
-  })
-
-  async persist(media: MediaUploadOptions[]) {
-    const { file, directory } = media[0]
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('directory', directory)
-    formData.append('filename', file.name)
-
-    const res = await fetch(`/api/cloudinary/media`, {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (res.status != 200) {
-      const responseData = await res.json()
-      throw new Error(responseData.message)
-    }
-
-    // TODO be programmer
-    await new Promise((resolve) => {
-      setTimeout(resolve, 2000)
-    })
-    return []
-  }
-  async delete(media: Media) {
-    await fetch(`/api/cloudinary/media/${encodeURIComponent(media.id)}`, {
-      method: 'DELETE',
-    })
-  }
-  async list(options: MediaListOptions): Promise<MediaList> {
-    let query = '?'
-
-    if (options.directory) {
-      query += `directory=${encodeURIComponent(options.directory)}`
-    }
-
-    const response = await fetch('/api/cloudinary/media' + query)
-
-    const { items } = await response.json()
-    return {
-      items: items.map((item) => {
-        let previewSrc: string
-
-        if (item.type === 'file') {
-          previewSrc = this.api.url(item.id, {
-            width: 56,
-            height: 56,
-            crop: 'fill',
-            gravity: 'auto',
-          })
-        }
-
-        return {
-          ...item,
-          previewSrc,
-        }
-      }),
-      totalCount: items.length,
-      limit: 500,
-      offset: 0,
-      nextOffset: undefined,
-    }
-  }
-  previewSrc(publicId: string) {
-    return this.api.url(publicId)
-  }
-}
+import { CloudinaryMediaStore } from '../../../next-tinacms-cloudinary/cloudinary-media-store'
 
 export default function Post({ slug, file, error, preview }) {
   const cms = useCMS()
@@ -143,7 +61,9 @@ export default function Post({ slug, file, error, preview }) {
   usePlugin(form)
 
   useEffect(() => {
-    cms.media.store = new CloudinaryMediaStore()
+    cms.media.store = new CloudinaryMediaStore(
+      process.env.CLOUDINARY_CLOUD_NAME
+    )
     // @ts-ignore
     window.github = cms.media.store
   }, [])
