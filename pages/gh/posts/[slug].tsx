@@ -41,10 +41,15 @@ class CloudinaryMediaStore implements MediaStore {
     formData.append('directory', directory)
     formData.append('filename', file.name)
 
-    await fetch(`/api/cloudinary/media`, {
+    const res = await fetch(`/api/cloudinary/media`, {
       method: 'POST',
       body: formData,
     })
+
+    if (res.status % 100 != 2) {
+      const responseData = await res.json()
+      throw new Error(responseData.message)
+    }
 
     // TODO be programmer
     await new Promise((resolve) => {
