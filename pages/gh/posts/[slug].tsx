@@ -44,6 +44,11 @@ class CloudinaryMediaStore implements MediaStore {
       method: 'POST',
       body: formData,
     })
+
+    // TODO be programmer
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000)
+    })
     return []
   }
   async delete(media: Media) {
