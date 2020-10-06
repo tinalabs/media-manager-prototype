@@ -25,6 +25,7 @@ import {
 import { InlineForm, InlineImage } from 'react-tinacms-inline'
 import { getGithubPreviewProps, parseMarkdown } from 'next-tinacms-github'
 import { Cloudinary } from 'cloudinary-core'
+import { Image } from 'cloudinary-react'
 
 class CloudinaryMediaStore implements MediaStore {
   accept = '*'
@@ -172,17 +173,27 @@ export default function Post({ slug, file, error, preview }) {
                 title={post.frontmatter.title}
                 coverImage={post.frontmatter.coverImage}
                 coverImageComponent={
-                  cms.enabled ? (
+                  // @ts-ignore
+                  <InlineImage
+                    name="frontmatter.coverImage"
                     // @ts-ignore
-                    <InlineImage
-                      name="frontmatter.coverImage"
-                      // @ts-ignore
-                      parse={(media) => {
-                        if (!media) return
-                        return media.id
-                      }}
-                    />
-                  ) : null
+                    parse={(media) => {
+                      if (!media) return
+                      return media.id
+                    }}
+                    previewSrc={(id) => id}
+                  >
+                    {({ src }) => (
+                      <Image
+                        cloudName={process.env.CLOUDINARY_CLOUD_NAME}
+                        publicId={src}
+                        width="auto"
+                        crop="fill"
+                        gravity="auto"
+                        responsive
+                      />
+                    )}
+                  </InlineImage>
                 }
                 date={post.frontmatter.date}
                 author={post.frontmatter.author}
